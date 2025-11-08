@@ -33,6 +33,9 @@
 
   let rows: VowelCell[][] = [];
 
+  const formatVowelLabel = (phoneme: VowelPhoneme) =>
+    phoneme.graphemes?.length ? phoneme.graphemes.join(', ') : phoneme.ipa;
+
   $: rows = vowelHeights.map((height) =>
     vowelBacknesses.map((backness) => {
       const placeholder = reference[height]?.[backness];
@@ -91,13 +94,13 @@
                     <span class="entry__tag">{entry.language.id.toUpperCase()}</span>
                     <span class="entry__ipa">
                       {#if entry.unrounded.length}
-                        {entry.unrounded.map((vowel) => vowel.ipa).join(', ')}
+                        {entry.unrounded.map(formatVowelLabel).join(', ')}
                       {/if}
                       {#if entry.unrounded.length && entry.rounded.length}
                         <span aria-hidden="true"> • </span>
                       {/if}
                       {#if entry.rounded.length}
-                        {entry.rounded.map((vowel) => vowel.ipa).join(', ')}
+                        {entry.rounded.map(formatVowelLabel).join(', ')}
                       {/if}
                     </span>
                   </li>

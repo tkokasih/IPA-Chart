@@ -32,6 +32,9 @@
 
   let rows: Cell[][] = [];
 
+  const formatPhonemeLabel = (phoneme: ConsonantPhoneme) =>
+    phoneme.graphemes?.length ? phoneme.graphemes.join(', ') : phoneme.ipa;
+
   $: rows = consonantManners.map((manner) =>
     consonantPlaces.map((place) => {
       const placeholder = reference[manner]?.[place] ?? [];
@@ -83,7 +86,7 @@
                   <li class="entry" style={`--lang-color: ${entry.language.color}`}>
                     <span class="entry__tag">{entry.language.id.toUpperCase()}</span>
                     <span class="entry__ipa">
-                      {entry.entries.map((phoneme) => phoneme.ipa).join(', ')}
+                      {entry.entries.map(formatPhonemeLabel).join(', ')}
                     </span>
                   </li>
                 {/each}
