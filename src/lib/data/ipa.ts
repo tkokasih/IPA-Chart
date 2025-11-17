@@ -78,6 +78,7 @@ export interface Language {
   script: string;
   phonemes: Phoneme[];
   rules?: LanguageRule[];
+  alphabet?: string[];
   notes?: string;
 }
 
@@ -410,6 +411,32 @@ export const languages: Language[] = [
     name: 'Korean',
     variety: 'Seoul',
     script: 'Hangul',
+    alphabet: [
+      'ㄱ',
+      'ㄴ',
+      'ㄷ',
+      'ㄹ',
+      'ㅁ',
+      'ㅂ',
+      'ㅅ',
+      'ㅇ',
+      'ㅈ',
+      'ㅊ',
+      'ㅋ',
+      'ㅌ',
+      'ㅍ',
+      'ㅎ',
+      'ㅏ',
+      'ㅑ',
+      'ㅓ',
+      'ㅕ',
+      'ㅗ',
+      'ㅛ',
+      'ㅜ',
+      'ㅠ',
+      'ㅡ',
+      'ㅣ'
+    ],
     phonemes: [
       {
         ipa: 'p',
@@ -460,6 +487,31 @@ export const languages: Language[] = [
         graphemes: ['ㅅ'],
         contexts: ['syllable-final'],
         notes: 'Stops neutralize in coda position'
+      },
+      {
+        ipa: 't͡ɕ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'voiceless',
+        graphemes: ['ㅈ'],
+        contexts: ['syllable-initial']
+      },
+      {
+        ipa: 't͡ɕʰ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'aspirated',
+        graphemes: ['ㅊ'],
+        contexts: ['syllable-initial']
+      },
+      {
+        ipa: 't͡ɕ̚',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'voiceless',
+        graphemes: ['ㅈ'],
+        contexts: ['syllable-final'],
+        notes: 'Neutralized coda affricate'
       },
       {
         ipa: 'k',
@@ -547,9 +599,41 @@ export const languages: Language[] = [
       },
       { ipa: 'ɛ', height: 'open-mid', backness: 'front', rounding: 'unrounded', graphemes: ['ㅐ'] },
       { ipa: 'a', height: 'open', backness: 'front', rounding: 'unrounded', graphemes: ['ㅏ'] },
+      {
+        ipa: 'ja',
+        height: 'open',
+        backness: 'front',
+        rounding: 'unrounded',
+        graphemes: ['ㅑ'],
+        notes: 'Palatalized /a/'
+      },
       { ipa: 'ʌ', height: 'open-mid', backness: 'back', rounding: 'unrounded', graphemes: ['ㅓ'] },
+      {
+        ipa: 'jʌ',
+        height: 'open-mid',
+        backness: 'back',
+        rounding: 'unrounded',
+        graphemes: ['ㅕ'],
+        notes: 'Palatalized /ʌ/'
+      },
       { ipa: 'o', height: 'close-mid', backness: 'back', rounding: 'rounded', graphemes: ['ㅗ'] },
+      {
+        ipa: 'jo',
+        height: 'close-mid',
+        backness: 'back',
+        rounding: 'rounded',
+        graphemes: ['ㅛ'],
+        notes: 'Palatalized /o/'
+      },
       { ipa: 'u', height: 'close', backness: 'back', rounding: 'rounded', graphemes: ['ㅜ'] },
+      {
+        ipa: 'ju',
+        height: 'close',
+        backness: 'back',
+        rounding: 'rounded',
+        graphemes: ['ㅠ'],
+        notes: 'Palatalized /u/'
+      },
       { ipa: 'ɯ', height: 'close', backness: 'back', rounding: 'unrounded', graphemes: ['ㅡ'] }
     ],
     rules: [
@@ -569,14 +653,66 @@ export const languages: Language[] = [
     name: 'Arabic',
     variety: 'MSA',
     script: 'Arabic',
+    alphabet: [
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
+      'ء'
+    ],
     notes: 'Short vowels typically unwritten.',
     phonemes: [
       { ipa: 'b', place: 'bilabial', manner: 'plosive', voicing: 'voiced', graphemes: ['ب'] },
       { ipa: 't', place: 'dental', manner: 'plosive', voicing: 'voiceless', graphemes: ['ت'] },
+      {
+        ipa: 'θ',
+        place: 'dental',
+        manner: 'fricative',
+        voicing: 'voiceless',
+        graphemes: ['ث']
+      },
       { ipa: 'd', place: 'dental', manner: 'plosive', voicing: 'voiced', graphemes: ['د'] },
+      {
+        ipa: 'ð',
+        place: 'dental',
+        manner: 'fricative',
+        voicing: 'voiced',
+        graphemes: ['ذ']
+      },
       { ipa: 'k', place: 'velar', manner: 'plosive', voicing: 'voiceless', graphemes: ['ك'] },
       { ipa: 'q', place: 'uvular', manner: 'plosive', voicing: 'voiceless', graphemes: ['ق'] },
       { ipa: 'ʔ', place: 'glottal', manner: 'plosive', voicing: 'voiceless', graphemes: ['ء'] },
+      {
+        ipa: 'd͡ʒ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'voiced',
+        graphemes: ['ج']
+      },
       {
         ipa: 'f',
         place: 'labiodental',
@@ -593,6 +729,20 @@ export const languages: Language[] = [
         voicing: 'voiceless',
         graphemes: ['ش']
       },
+      {
+        ipa: 'sˤ',
+        place: 'alveolar',
+        manner: 'fricative',
+        voicing: 'voiceless',
+        graphemes: ['ص']
+      },
+      {
+        ipa: 'ðˤ',
+        place: 'dental',
+        manner: 'fricative',
+        voicing: 'voiced',
+        graphemes: ['ظ']
+      },
       { ipa: 'χ', place: 'uvular', manner: 'fricative', voicing: 'voiceless', graphemes: ['خ'] },
       {
         ipa: 'ħ',
@@ -600,6 +750,13 @@ export const languages: Language[] = [
         manner: 'fricative',
         voicing: 'voiceless',
         graphemes: ['ح']
+      },
+      {
+        ipa: 'ɣ',
+        place: 'uvular',
+        manner: 'fricative',
+        voicing: 'voiced',
+        graphemes: ['غ']
       },
       { ipa: 'ʕ', place: 'pharyngeal', manner: 'fricative', voicing: 'voiced', graphemes: ['ع'] },
       { ipa: 'h', place: 'glottal', manner: 'fricative', voicing: 'voiceless', graphemes: ['ه'] },
@@ -611,6 +768,20 @@ export const languages: Language[] = [
         manner: 'lateral_approximant',
         voicing: 'voiced',
         graphemes: ['ل']
+      },
+      {
+        ipa: 'tˤ',
+        place: 'alveolar',
+        manner: 'plosive',
+        voicing: 'voiceless',
+        graphemes: ['ط']
+      },
+      {
+        ipa: 'dˤ',
+        place: 'alveolar',
+        manner: 'plosive',
+        voicing: 'voiced',
+        graphemes: ['ض']
       },
       { ipa: 'r', place: 'alveolar', manner: 'trill', voicing: 'voiced', graphemes: ['ر'] },
       {
