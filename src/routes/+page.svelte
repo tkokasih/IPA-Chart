@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import ConsonantChart from '$lib/components/ConsonantChart.svelte';
   import VowelChart from '$lib/components/VowelChart.svelte';
   import { consonantReference, languages, vowelReference, type Language } from '$lib/data/ipa';
+  import { getGraphemeAnchorId, getGraphemeKey } from '$lib/utils/grapheme';
 
   type ColoredLanguage = Language & { color: string };
 
@@ -12,6 +14,50 @@
   }));
 
   const hasRules = displayLanguages.some((language) => language.rules?.length);
+  const highlightTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  const highlightAlphabet = (languageId: string, grapheme: string) => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const key = getGraphemeKey(languageId, grapheme);
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>(`[data-grapheme-key="${key}"]`)
+    );
+
+    if (targets.length === 0) {
+      return;
+    }
+
+    const anchorId = getGraphemeAnchorId(languageId, grapheme);
+    const primaryTarget = targets.find((target) => target.id === anchorId) ?? targets[0];
+    primaryTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+
+    targets.forEach((target) => target.classList.add('entry__grapheme--highlight'));
+
+    const existingTimer = highlightTimers.get(key);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    const timer = window.setTimeout(() => {
+      targets.forEach((target) => target.classList.remove('entry__grapheme--highlight'));
+      highlightTimers.delete(key);
+    }, 1800);
+
+    highlightTimers.set(key, timer);
+  };
+
+  const handleAlphabetClick = (event: MouseEvent, languageId: string, grapheme: string) => {
+    event.preventDefault();
+    highlightAlphabet(languageId, grapheme);
+  };
+
+  onDestroy(() => {
+    highlightTimers.forEach((timer) => clearTimeout(timer));
+    highlightTimers.clear();
+  });
 </script>
 
 <svelte:head>
@@ -48,6 +94,26 @@
             </p>
             {#if language.notes}
               <p class="legend__notes">{language.notes}</p>
+            {/if}
+            {#if language.alphabet?.length}
+              <div class="legend__alphabet">
+                <p class="legend__alphabet-label">Alphabet</p>
+                <ul class="legend__alphabet-list">
+                  {#each language.alphabet as symbol}
+                    <li>
+                      <a
+                        class="legend__alphabet-link"
+                        href={`#${getGraphemeAnchorId(language.id, symbol)}`}
+                        on:click|preventDefault={(event) =>
+                          handleAlphabetClick(event, language.id, symbol)}
+                        aria-label={`Highlight ${language.name} letter ${symbol}`}
+                      >
+                        {symbol}
+                      </a>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
             {/if}
           </div>
         </li>
@@ -197,6 +263,52 @@
     margin: 0.35rem 0 0;
     font-size: 0.85rem;
     color: rgba(30, 41, 59, 0.7);
+  }
+
+  .legend__alphabet {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .legend__alphabet-label {
+    margin: 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(15, 23, 42, 0.5);
+  }
+
+  .legend__alphabet-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .legend__alphabet-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.9rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .legend__alphabet-link:hover,
+  .legend__alphabet-link:focus-visible {
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8;
   }
 
   .rules {

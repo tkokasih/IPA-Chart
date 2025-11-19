@@ -10,14 +10,17 @@
     type ConsonantPhoneme,
     type ConsonantPlace,
     type ConsonantReference,
-    type Language
+    type Language,
+    type PhonemeBase
   } from '$lib/data/ipa';
+  import { getGraphemeAnchorId, getGraphemeKey } from '$lib/utils/grapheme';
 
   type ColoredLanguage = Language & { color: string };
 
   interface CellLanguage {
     language: ColoredLanguage;
     entries: ConsonantPhoneme[];
+    tokens: GraphemeToken[];
   }
 
   interface Cell {
@@ -27,30 +30,72 @@
     items: CellLanguage[];
   }
 
+  interface GraphemeToken {
+    label: string;
+    key?: string;
+    anchorId?: string;
+  }
+
   export let languages: ColoredLanguage[] = [];
   export let reference: ConsonantReference = consonantReference;
 
   let rows: Cell[][] = [];
+  let claimedGraphemeAnchors = new Set<string>();
 
-  const formatPhonemeLabel = (phoneme: ConsonantPhoneme) =>
-    phoneme.graphemes?.length ? phoneme.graphemes.join(', ') : phoneme.ipa;
+  const buildTokens = (language: ColoredLanguage, phonemes: ConsonantPhoneme[]): GraphemeToken[] =>
+    phonemes.flatMap((phoneme) => extractTokens(language, phoneme));
 
-  $: rows = consonantManners.map((manner) =>
-    consonantPlaces.map((place) => {
-      const placeholder = reference[manner]?.[place] ?? [];
-      const items = languages
-        .map((language) => {
-          const entries = language.phonemes
-            .filter(isConsonant)
-            .filter((phoneme) => phoneme.manner === manner && phoneme.place === place);
+  const extractTokens = <T extends PhonemeBase>(
+    language: ColoredLanguage,
+    phoneme: T
+  ): GraphemeToken[] => {
+    if (phoneme.graphemes?.length) {
+      return phoneme.graphemes.map((grapheme) => {
+        const key = getGraphemeKey(language.id, grapheme);
 
-          return entries.length > 0 ? { language, entries } : null;
-        })
-        .filter((entry): entry is CellLanguage => Boolean(entry));
+        if (claimedGraphemeAnchors.has(key)) {
+          return { label: grapheme, key } satisfies GraphemeToken;
+        }
 
-      return { manner, place, placeholder, items } satisfies Cell;
-    })
-  );
+        claimedGraphemeAnchors.add(key);
+        return {
+          label: grapheme,
+          key,
+          anchorId: getGraphemeAnchorId(language.id, grapheme)
+        } satisfies GraphemeToken;
+      });
+    }
+
+    return [{ label: phoneme.ipa } satisfies GraphemeToken];
+  };
+
+  $: {
+    claimedGraphemeAnchors = new Set();
+    rows = consonantManners.map((manner) =>
+      consonantPlaces.map((place) => {
+        const placeholder = reference[manner]?.[place] ?? [];
+        const items = languages
+          .map((language) => {
+            const entries = language.phonemes
+              .filter(isConsonant)
+              .filter((phoneme) => phoneme.manner === manner && phoneme.place === place);
+
+            if (entries.length === 0) {
+              return null;
+            }
+
+            return {
+              language,
+              entries,
+              tokens: buildTokens(language, entries)
+            } satisfies CellLanguage;
+          })
+          .filter((entry): entry is CellLanguage => Boolean(entry));
+
+        return { manner, place, placeholder, items } satisfies Cell;
+      })
+    );
+  }
 
   const gridTemplate = `minmax(7rem, 9rem) repeat(${consonantPlaces.length}, minmax(8rem, 1fr))`;
 </script>
@@ -86,7 +131,23 @@
                   <li class="entry" style={`--lang-color: ${entry.language.color}`}>
                     <span class="entry__tag">{entry.language.id.toUpperCase()}</span>
                     <span class="entry__ipa">
-                      {entry.entries.map(formatPhonemeLabel).join(', ')}
+                      {#each entry.tokens as token, index}
+                        {#if index > 0}
+                          <span aria-hidden="true" class="entry__separator">, </span>
+                        {/if}
+                        {#if token.key}
+                          <span
+                            class="entry__grapheme"
+                            data-grapheme-key={token.key}
+                            id={token.anchorId}
+                            tabindex="-1"
+                          >
+                            {token.label}
+                          </span>
+                        {:else}
+                          <span>{token.label}</span>
+                        {/if}
+                      {/each}
                     </span>
                   </li>
                 {/each}
@@ -202,6 +263,27 @@
   .entry__ipa {
     font-size: 1rem;
     font-family: 'Noto Sans', 'Charis SIL', 'Gentium Plus', system-ui, sans-serif;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .entry__separator {
+    color: rgba(15, 23, 42, 0.55);
+  }
+
+  .entry__grapheme {
+    border-radius: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    background: rgba(37, 99, 235, 0.08);
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  :global(.entry__grapheme--highlight) {
+    background: rgba(250, 204, 21, 0.45);
+    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
   }
 
   .cell__empty {

@@ -7,11 +7,13 @@
     vowelHeights,
     vowelReference,
     type Language,
+    type PhonemeBase,
     type VowelBackness,
     type VowelHeight,
     type VowelPhoneme,
     type VowelReference
   } from '$lib/data/ipa';
+  import { getGraphemeAnchorId, getGraphemeKey } from '$lib/utils/grapheme';
 
   type ColoredLanguage = Language & { color: string };
 
@@ -19,6 +21,8 @@
     language: ColoredLanguage;
     unrounded: VowelPhoneme[];
     rounded: VowelPhoneme[];
+    unroundedTokens: GraphemeToken[];
+    roundedTokens: GraphemeToken[];
   }
 
   interface VowelCell {
@@ -28,37 +32,75 @@
     entries: VowelCellEntry[];
   }
 
+  interface GraphemeToken {
+    label: string;
+    key?: string;
+    anchorId?: string;
+  }
+
   export let languages: ColoredLanguage[] = [];
   export let reference: VowelReference = vowelReference;
 
   let rows: VowelCell[][] = [];
+  let claimedGraphemeAnchors = new Set<string>();
 
-  const formatVowelLabel = (phoneme: VowelPhoneme) =>
-    phoneme.graphemes?.length ? phoneme.graphemes.join(', ') : phoneme.ipa;
+  const buildTokens = <T extends PhonemeBase>(
+    language: ColoredLanguage,
+    phonemes: T[]
+  ): GraphemeToken[] =>
+    phonemes.flatMap((phoneme) => {
+      if (phoneme.graphemes?.length) {
+        return phoneme.graphemes.map((grapheme) => {
+          const key = getGraphemeKey(language.id, grapheme);
 
-  $: rows = vowelHeights.map((height) =>
-    vowelBacknesses.map((backness) => {
-      const placeholder = reference[height]?.[backness];
-      const entries = languages
-        .map((language) => {
-          const vowels = language.phonemes
-            .filter(isVowel)
-            .filter((phoneme) => phoneme.height === height && phoneme.backness === backness);
-
-          if (vowels.length === 0) {
-            return null;
+          if (claimedGraphemeAnchors.has(key)) {
+            return { label: grapheme, key } satisfies GraphemeToken;
           }
 
-          const unrounded = vowels.filter((item) => item.rounding === 'unrounded');
-          const rounded = vowels.filter((item) => item.rounding === 'rounded');
+          claimedGraphemeAnchors.add(key);
+          return {
+            label: grapheme,
+            key,
+            anchorId: getGraphemeAnchorId(language.id, grapheme)
+          } satisfies GraphemeToken;
+        });
+      }
 
-          return { language, unrounded, rounded } satisfies VowelCellEntry;
-        })
-        .filter((value): value is VowelCellEntry => Boolean(value));
+      return [{ label: phoneme.ipa } satisfies GraphemeToken];
+    });
 
-      return { height, backness, placeholder, entries } satisfies VowelCell;
-    })
-  );
+  $: {
+    claimedGraphemeAnchors = new Set();
+    rows = vowelHeights.map((height) =>
+      vowelBacknesses.map((backness) => {
+        const placeholder = reference[height]?.[backness];
+        const entries = languages
+          .map((language) => {
+            const vowels = language.phonemes
+              .filter(isVowel)
+              .filter((phoneme) => phoneme.height === height && phoneme.backness === backness);
+
+            if (vowels.length === 0) {
+              return null;
+            }
+
+            const unrounded = vowels.filter((item) => item.rounding === 'unrounded');
+            const rounded = vowels.filter((item) => item.rounding === 'rounded');
+
+            return {
+              language,
+              unrounded,
+              rounded,
+              unroundedTokens: buildTokens(language, unrounded),
+              roundedTokens: buildTokens(language, rounded)
+            } satisfies VowelCellEntry;
+          })
+          .filter((value): value is VowelCellEntry => Boolean(value));
+
+        return { height, backness, placeholder, entries } satisfies VowelCell;
+      })
+    );
+  }
 
   const gridTemplate = `minmax(7rem, 9rem) repeat(${vowelBacknesses.length}, minmax(8rem, 1fr))`;
 </script>
@@ -93,14 +135,50 @@
                   <li class="entry" style={`--lang-color: ${entry.language.color}`}>
                     <span class="entry__tag">{entry.language.id.toUpperCase()}</span>
                     <span class="entry__ipa">
-                      {#if entry.unrounded.length}
-                        {entry.unrounded.map(formatVowelLabel).join(', ')}
+                      {#if entry.unroundedTokens.length}
+                        <span class="entry__group">
+                          {#each entry.unroundedTokens as token, index}
+                            {#if index > 0}
+                              <span aria-hidden="true" class="entry__separator">, </span>
+                            {/if}
+                            {#if token.key}
+                              <span
+                                class="entry__grapheme"
+                                data-grapheme-key={token.key}
+                                id={token.anchorId}
+                                tabindex="-1"
+                              >
+                                {token.label}
+                              </span>
+                            {:else}
+                              <span>{token.label}</span>
+                            {/if}
+                          {/each}
+                        </span>
                       {/if}
-                      {#if entry.unrounded.length && entry.rounded.length}
-                        <span aria-hidden="true"> • </span>
+                      {#if entry.unroundedTokens.length && entry.roundedTokens.length}
+                        <span aria-hidden="true" class="entry__divider">•</span>
                       {/if}
-                      {#if entry.rounded.length}
-                        {entry.rounded.map(formatVowelLabel).join(', ')}
+                      {#if entry.roundedTokens.length}
+                        <span class="entry__group">
+                          {#each entry.roundedTokens as token, index}
+                            {#if index > 0}
+                              <span aria-hidden="true" class="entry__separator">, </span>
+                            {/if}
+                            {#if token.key}
+                              <span
+                                class="entry__grapheme"
+                                data-grapheme-key={token.key}
+                                id={token.anchorId}
+                                tabindex="-1"
+                              >
+                                {token.label}
+                              </span>
+                            {:else}
+                              <span>{token.label}</span>
+                            {/if}
+                          {/each}
+                        </span>
                       {/if}
                     </span>
                   </li>
@@ -221,6 +299,34 @@
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0.25rem;
+  }
+
+  .entry__group {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .entry__separator {
+    color: rgba(15, 23, 42, 0.55);
+  }
+
+  .entry__divider {
+    padding: 0 0.25rem;
+    color: rgba(15, 23, 42, 0.55);
+  }
+
+  .entry__grapheme {
+    border-radius: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    background: rgba(2, 132, 199, 0.08);
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  :global(.entry__grapheme--highlight) {
+    background: rgba(250, 204, 21, 0.45);
+    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
   }
 
   .cell__empty {
