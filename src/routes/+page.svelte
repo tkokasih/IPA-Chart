@@ -98,21 +98,23 @@
             {#if language.alphabet?.length}
               <div class="legend__alphabet">
                 <p class="legend__alphabet-label">Alphabet</p>
-                <ul class="legend__alphabet-list">
-                  {#each language.alphabet as symbol}
-                    <li>
-                      <a
-                        class="legend__alphabet-link"
-                        href={`#${getGraphemeAnchorId(language.id, symbol)}`}
-                        on:click|preventDefault={(event) =>
-                          handleAlphabetClick(event, language.id, symbol)}
-                        aria-label={`Highlight ${language.name} letter ${symbol}`}
-                      >
-                        {symbol}
-                      </a>
-                    </li>
-                  {/each}
-                </ul>
+                <div class="legend__alphabet-rail">
+                  <ul class="legend__alphabet-list">
+                    {#each language.alphabet as symbol}
+                      <li>
+                        <a
+                          class="legend__alphabet-link"
+                          href={`#${getGraphemeAnchorId(language.id, symbol)}`}
+                          on:click|preventDefault={(event) =>
+                            handleAlphabetClick(event, language.id, symbol)}
+                          aria-label={`Highlight ${language.name} letter ${symbol}`}
+                        >
+                          {symbol}
+                        </a>
+                      </li>
+                    {/each}
+                  </ul>
+                </div>
               </div>
             {/if}
           </div>
@@ -218,23 +220,24 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .legend li {
     display: flex;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0.9rem;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.92);
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     border-left: 4px solid var(--lang-color);
+    align-items: flex-start;
   }
 
   .swatch {
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 0.6rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.5rem;
     background: var(--lang-color);
     flex-shrink: 0;
     opacity: 0.9;
@@ -266,10 +269,10 @@
   }
 
   .legend__alphabet {
-    margin-top: 0.6rem;
+    margin-top: 0.45rem;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
   .legend__alphabet-label {
@@ -280,35 +283,43 @@
     color: rgba(15, 23, 42, 0.5);
   }
 
+  .legend__alphabet-rail {
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+  }
+
   .legend__alphabet-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.3rem;
+    align-items: center;
   }
 
   .legend__alphabet-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.9rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid rgba(148, 163, 184, 0.45);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.35rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(37, 99, 235, 0.08);
     font-size: 0.95rem;
     text-decoration: none;
     color: inherit;
+    white-space: nowrap;
     transition:
       background 0.2s ease,
+      box-shadow 0.2s ease,
       color 0.2s ease;
   }
 
   .legend__alphabet-link:hover,
   .legend__alphabet-link:focus-visible {
-    background: rgba(37, 99, 235, 0.08);
-    color: #1d4ed8;
+    background: rgba(250, 204, 21, 0.45);
+    color: #1f2937;
+    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.4);
   }
 
   .rules {
@@ -369,15 +380,6 @@
   }
 
   @media (min-width: 48rem) {
-    .legend ul {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    .legend li {
-      width: min(20rem, 100%);
-    }
-
     .rules__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
