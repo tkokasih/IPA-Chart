@@ -168,6 +168,7 @@
     position: sticky;
     left: 0;
     z-index: 2;
+    min-width: 4.5rem;
     border-right: 2px solid rgba(148, 163, 184, 0.5);
   }
 
@@ -219,7 +220,8 @@
       --col-data: minmax(8rem, 1fr);
     }
 
-    .cell--manner {
+    .cell--manner,
+    .cell--blank {
       min-width: 7rem;
     }
   }
