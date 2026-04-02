@@ -160,12 +160,15 @@
     left: 0;
     z-index: 1;
     min-width: 4.5rem;
+    justify-content: flex-start;
+    border-right: 2px solid rgba(148, 163, 184, 0.5);
   }
 
   .cell--blank {
     position: sticky;
     left: 0;
     z-index: 2;
+    border-right: 2px solid rgba(148, 163, 184, 0.5);
   }
 
   .cell__placeholder {
