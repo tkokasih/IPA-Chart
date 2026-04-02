@@ -23,7 +23,7 @@ export type ConsonantManner =
   | 'lateral_approximant'
   | 'affricate';
 
-export type ConsonantVoicing = 'voiceless' | 'voiced' | 'aspirated' | 'ejective';
+export type ConsonantVoicing = 'voiceless' | 'voiced' | 'aspirated' | 'ejective' | 'tense';
 
 export type VowelHeight =
   | 'close'
@@ -389,7 +389,7 @@ export const languages: Language[] = [
       { ipa: 'i', height: 'close', backness: 'front', rounding: 'unrounded', graphemes: ['i'] },
       { ipa: 'e', height: 'close-mid', backness: 'front', rounding: 'unrounded', graphemes: ['e'] },
       { ipa: 'ə', height: 'mid', backness: 'central', rounding: 'unrounded', graphemes: ['e'] },
-      { ipa: 'a', height: 'open', backness: 'front', rounding: 'unrounded', graphemes: ['a'] },
+      { ipa: 'a', height: 'open', backness: 'central', rounding: 'unrounded', graphemes: ['a'] },
       { ipa: 'o', height: 'close-mid', backness: 'back', rounding: 'rounded', graphemes: ['o'] },
       { ipa: 'u', height: 'close', backness: 'back', rounding: 'rounded', graphemes: ['u'] }
     ],
@@ -522,6 +522,55 @@ export const languages: Language[] = [
       },
       { ipa: 'h', place: 'glottal', manner: 'fricative', voicing: 'voiceless', graphemes: ['ㅎ'] },
       {
+        ipa: 'p͈',
+        place: 'bilabial',
+        manner: 'plosive',
+        voicing: 'tense',
+        graphemes: ['ㅃ']
+      },
+      {
+        ipa: 't͈',
+        place: 'alveolar',
+        manner: 'plosive',
+        voicing: 'tense',
+        graphemes: ['ㄸ']
+      },
+      {
+        ipa: 'k͈',
+        place: 'velar',
+        manner: 'plosive',
+        voicing: 'tense',
+        graphemes: ['ㄲ']
+      },
+      {
+        ipa: 's͈',
+        place: 'alveolar',
+        manner: 'fricative',
+        voicing: 'tense',
+        graphemes: ['ㅆ']
+      },
+      {
+        ipa: 't͡ɕ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'voiceless',
+        graphemes: ['ㅈ']
+      },
+      {
+        ipa: 't͡ɕʰ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'aspirated',
+        graphemes: ['ㅊ']
+      },
+      {
+        ipa: 't͡ɕ͈',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'tense',
+        graphemes: ['ㅉ']
+      },
+      {
         ipa: 'j',
         place: 'palatal',
         manner: 'approximant',
@@ -546,7 +595,7 @@ export const languages: Language[] = [
         graphemes: ['ㅔ']
       },
       { ipa: 'ɛ', height: 'open-mid', backness: 'front', rounding: 'unrounded', graphemes: ['ㅐ'] },
-      { ipa: 'a', height: 'open', backness: 'front', rounding: 'unrounded', graphemes: ['ㅏ'] },
+      { ipa: 'a', height: 'open', backness: 'central', rounding: 'unrounded', graphemes: ['ㅏ'] },
       { ipa: 'ʌ', height: 'open-mid', backness: 'back', rounding: 'unrounded', graphemes: ['ㅓ'] },
       { ipa: 'o', height: 'close-mid', backness: 'back', rounding: 'rounded', graphemes: ['ㅗ'] },
       { ipa: 'u', height: 'close', backness: 'back', rounding: 'rounded', graphemes: ['ㅜ'] },
@@ -554,11 +603,11 @@ export const languages: Language[] = [
     ],
     rules: [
       {
-        name: 'aspiration',
+        name: 'intersonorant voicing',
         type: 'allophone',
         phoneme: 'p',
         realizations: [
-          { ipa: 'pʰ', environment: 'word-initial stressed' },
+          { ipa: 'b', environment: 'between voiced sounds' },
           { ipa: 'p̚', environment: 'syllable-final' }
         ]
       }
@@ -575,8 +624,31 @@ export const languages: Language[] = [
       { ipa: 't', place: 'dental', manner: 'plosive', voicing: 'voiceless', graphemes: ['ت'] },
       { ipa: 'd', place: 'dental', manner: 'plosive', voicing: 'voiced', graphemes: ['د'] },
       { ipa: 'k', place: 'velar', manner: 'plosive', voicing: 'voiceless', graphemes: ['ك'] },
+      {
+        ipa: 'tˤ',
+        place: 'dental',
+        manner: 'plosive',
+        voicing: 'voiceless',
+        graphemes: ['ط'],
+        notes: 'Emphatic (pharyngealized)'
+      },
+      {
+        ipa: 'dˤ',
+        place: 'dental',
+        manner: 'plosive',
+        voicing: 'voiced',
+        graphemes: ['ض'],
+        notes: 'Emphatic (pharyngealized)'
+      },
       { ipa: 'q', place: 'uvular', manner: 'plosive', voicing: 'voiceless', graphemes: ['ق'] },
       { ipa: 'ʔ', place: 'glottal', manner: 'plosive', voicing: 'voiceless', graphemes: ['ء'] },
+      {
+        ipa: 'd͡ʒ',
+        place: 'postalveolar',
+        manner: 'affricate',
+        voicing: 'voiced',
+        graphemes: ['ج']
+      },
       {
         ipa: 'f',
         place: 'labiodental',
@@ -584,8 +656,26 @@ export const languages: Language[] = [
         voicing: 'voiceless',
         graphemes: ['ف']
       },
+      { ipa: 'θ', place: 'dental', manner: 'fricative', voicing: 'voiceless', graphemes: ['ث'] },
+      { ipa: 'ð', place: 'dental', manner: 'fricative', voicing: 'voiced', graphemes: ['ذ'] },
       { ipa: 's', place: 'alveolar', manner: 'fricative', voicing: 'voiceless', graphemes: ['س'] },
+      {
+        ipa: 'sˤ',
+        place: 'alveolar',
+        manner: 'fricative',
+        voicing: 'voiceless',
+        graphemes: ['ص'],
+        notes: 'Emphatic (pharyngealized)'
+      },
       { ipa: 'z', place: 'alveolar', manner: 'fricative', voicing: 'voiced', graphemes: ['ز'] },
+      {
+        ipa: 'ðˤ',
+        place: 'dental',
+        manner: 'fricative',
+        voicing: 'voiced',
+        graphemes: ['ظ'],
+        notes: 'Emphatic (pharyngealized)'
+      },
       {
         ipa: 'ʃ',
         place: 'postalveolar',
@@ -594,6 +684,7 @@ export const languages: Language[] = [
         graphemes: ['ش']
       },
       { ipa: 'χ', place: 'uvular', manner: 'fricative', voicing: 'voiceless', graphemes: ['خ'] },
+      { ipa: 'ɣ', place: 'uvular', manner: 'fricative', voicing: 'voiced', graphemes: ['غ'] },
       {
         ipa: 'ħ',
         place: 'pharyngeal',
@@ -631,8 +722,8 @@ export const languages: Language[] = [
       { ipa: 'iː', height: 'close', backness: 'front', rounding: 'unrounded', graphemes: ['ي'] },
       { ipa: 'u', height: 'close', backness: 'back', rounding: 'rounded', graphemes: ['ُ', 'و'] },
       { ipa: 'uː', height: 'close', backness: 'back', rounding: 'rounded', graphemes: ['و'] },
-      { ipa: 'a', height: 'open', backness: 'front', rounding: 'unrounded', graphemes: ['َ'] },
-      { ipa: 'aː', height: 'open', backness: 'front', rounding: 'unrounded', graphemes: ['ا'] }
+      { ipa: 'a', height: 'open', backness: 'central', rounding: 'unrounded', graphemes: ['َ'] },
+      { ipa: 'aː', height: 'open', backness: 'central', rounding: 'unrounded', graphemes: ['ا'] }
     ]
   }
 ];
