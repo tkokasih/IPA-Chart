@@ -123,7 +123,7 @@
   }
 
   h1 {
-    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-size: clamp(1.6rem, 6vw, 3.5rem);
     line-height: 1.1;
     margin: 0;
   }

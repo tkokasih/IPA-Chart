@@ -52,7 +52,7 @@
     })
   );
 
-  const gridTemplate = `minmax(7rem, 9rem) repeat(${consonantPlaces.length}, minmax(8rem, 1fr))`;
+  const gridTemplate = `var(--col-header) repeat(${consonantPlaces.length}, var(--col-data))`;
 </script>
 
 <section class="chart">
@@ -128,17 +128,18 @@
 
   .chart__grid {
     display: grid;
-    min-width: 48rem;
+    --col-header: minmax(4.5rem, 6rem);
+    --col-data: minmax(5.5rem, 1fr);
   }
 
   .cell {
     border: 1px solid rgba(148, 163, 184, 0.4);
-    padding: 0.75rem;
+    padding: clamp(0.4rem, 2vw, 0.75rem);
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
     background: rgba(255, 255, 255, 0.95);
-    min-height: 5.5rem;
+    min-height: clamp(3.5rem, 8vw, 5.5rem);
   }
 
   .cell--heading {
@@ -151,14 +152,14 @@
 
   .cell--place {
     text-align: center;
-    font-size: 0.9rem;
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
   }
 
   .cell--manner {
     position: sticky;
     left: 0;
     z-index: 1;
-    min-width: 7rem;
+    min-width: 4.5rem;
   }
 
   .cell--blank {
@@ -207,6 +208,17 @@
   .cell__empty {
     font-size: 0.9rem;
     color: rgba(148, 163, 184, 0.9);
+  }
+
+  @media (min-width: 40rem) {
+    .chart__grid {
+      --col-header: minmax(7rem, 9rem);
+      --col-data: minmax(8rem, 1fr);
+    }
+
+    .cell--manner {
+      min-width: 7rem;
+    }
   }
 
   @media (min-width: 64rem) {
